@@ -28,8 +28,8 @@ body{
     top:250px;
     left:50%;
     transform:translateX(-50%);
-    width:480px;
-    height:480px;
+    width:600px;
+    height:600px;
     border:none;
     z-index:5;
 }
@@ -102,7 +102,7 @@ canvas{ display:block; }
 </div>
  
 <!-- MAIN VIEW -->
-<canvas id="scene3d" width="480" height="480"></canvas>
+<canvas id="scene3d" width="600" height="600"></canvas>
 
 <!-- OPTIONS -->
 <div id="board">
@@ -127,7 +127,7 @@ const renderer = new THREE.WebGLRenderer({
     canvas:document.getElementById("scene3d"),
     antialias:true
 });
-renderer.setSize(480,480);
+renderer.setSize(600,600);
 
 scene.add(new THREE.AmbientLight(0xffffff,1));
 
