@@ -300,9 +300,9 @@ function drawOptions(){
         c:list[2]
     };
 
-    render(a,views[list[0]]);
-    render(b,views[list[1]]);
-    render(c,views[list[2]]);
+    render(document.getElementById("a"), views[list[0]]);
+render(document.getElementById("b"), views[list[1]]);
+render(document.getElementById("c"), views[list[2]]);
 }
 
 function render(canvas,obj){
