@@ -22,7 +22,6 @@ body{
     line-height:1.4;
 }
 
-/* 🔥 FIX: ขยับลง + ลบกรอบ */
 #scene3d{
     position:absolute;
     top:250px;
@@ -37,7 +36,6 @@ body{
 #board{
     position:absolute;
     top:600px;
-    bottom:auto;
     width:100%;
     display:grid;
     grid-template-columns:repeat(3,220px);
@@ -62,6 +60,13 @@ body{
 }
 
 canvas{ display:block; }
+
+#question{
+    margin-top:10px;
+    font-size:18px;
+    font-weight:bold;
+    color:#222;
+}
 </style>
 </head>
 
@@ -70,37 +75,37 @@ canvas{ display:block; }
 <div id="ui">
     <h2>🧠 เกมมิติสัมพันธ์ รูปทรงเรขาคณิต</h2>
 
-<div style="font-size:16px;color:#333;line-height:1.6;margin-bottom:10px;">
-    <b>ผู้พัฒนา :</b> นางสาววรรณา อุ่นคำ<br>
-    กลุ่มสาระการเรียนรู้คณิตศาสตร์<br>
-    โรงเรียนมหาชนะชัยวิทยาคม
-</div>
+    <div style="font-size:16px;color:#333;line-height:1.6;margin-bottom:10px;">
+        <b>ผู้พัฒนา :</b> นางสาววรรณา อุ่นคำ<br>
+        กลุ่มสาระการเรียนรู้คณิตศาสตร์<br>
+        โรงเรียนมหาชนะชัยวิทยาคม
+    </div>
 
     <p>
         📊 คะแนน: <span id="score">0</span> |
         📌 ข้อ: <span id="qnum">0</span>/10
     </p>
-	ชื่อ-สกุล
-<input id="studentName">
 
-เลขที่
-<input id="studentNo" style="width:60px">
+    ชื่อ-สกุล
+    <input id="studentName">
 
-ชั้น
-<input id="studentClass" style="width:60px">
+    เลขที่
+    <input id="studentNo" style="width:60px">
 
-ห้อง
-<input id="studentRoom" style="width:60px">
+    ชั้น
+    <input id="studentClass" style="width:60px">
 
-<br><br>
+    ห้อง
+    <input id="studentRoom" style="width:60px">
 
-<p id="question" style="margin-top:10px;font-size:18px;">
-กดเริ่มเกม
-</p>
-<br><br>
+    <br><br>
+
+    <p id="question">กดเริ่มเกม</p>
+
+    <br>
+    <button onclick="startGame()">เริ่มเกม</button>
 </div>
- <p id="question">กดเริ่มเกม</p>
-	
+
 <!-- MAIN VIEW -->
 <canvas id="scene3d" width="480" height="480"></canvas>
 
@@ -109,7 +114,6 @@ canvas{ display:block; }
     <canvas id="a" class="option" width="220" height="220"></canvas>
     <canvas id="b" class="option" width="220" height="220"></canvas>
     <canvas id="c" class="option" width="220" height="220"></canvas>
-   
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
@@ -135,24 +139,12 @@ let model = new THREE.Group();
 scene.add(model);
 
 // ================= BLOCK =================
-function block(x,y,z,isFront=false){
+function block(x,y,z){
 
     const geo = new THREE.BoxGeometry(1,1,1);
+    const mat = new THREE.MeshBasicMaterial({color:0x888888});
 
-    const mats = [
-        new THREE.MeshBasicMaterial({color:0x888888}),
-        new THREE.MeshBasicMaterial({color:0x888888}),
-        new THREE.MeshBasicMaterial({color:0x888888}),
-        new THREE.MeshBasicMaterial({color:0x888888}),
-
-       new THREE.MeshBasicMaterial({
-    color: 0x888888
-}),
-
-        new THREE.MeshBasicMaterial({color:0x888888})
-    ];
-
-    const cube = new THREE.Mesh(geo,mats);
+    const cube = new THREE.Mesh(geo,mat);
     cube.position.set(x,y,z);
 
     const edges = new THREE.EdgesGeometry(geo);
@@ -161,11 +153,9 @@ function block(x,y,z,isFront=false){
     model.add(cube);
 }
 
-/// ================= SHAPES =================
-
+// ================= SHAPES =================
 const shapes=[
 
-// 1) โครงบิด 2 ชั้น (Twin Twist)
 [
 {x:0,y:0,z:0},
 {x:1,y:0,z:-1},
@@ -174,7 +164,6 @@ const shapes=[
 {x:2,y:2,z:0}
 ],
 
-// 2) สะพานหักกลาง (Broken Bridge)
 [
 {x:0,y:0,z:0},
 {x:1,y:0,z:0},
@@ -183,7 +172,6 @@ const shapes=[
 {x:2,y:2,z:-2}
 ],
 
-// 3) กล่องงอ (Folded Box)
 [
 {x:0,y:0,z:0},
 {x:0,y:1,z:0},
@@ -192,7 +180,6 @@ const shapes=[
 {x:2,y:2,z:-1}
 ],
 
-// 4) ตัว N 3D (3D N-shape)
 [
 {x:0,y:0,z:0},
 {x:0,y:1,z:-1},
@@ -201,7 +188,6 @@ const shapes=[
 {x:2,y:2,z:-2}
 ],
 
-// 5) กรงเล็บ (Claw Shape)
 [
 {x:1,y:0,z:0},
 {x:0,y:1,z:-1},
@@ -210,7 +196,6 @@ const shapes=[
 {x:1,y:2,z:-2}
 ],
 
-// 6) โครงเอียงคู่ (Double Lean Tower)
 [
 {x:0,y:0,z:0},
 {x:0,y:1,z:-1},
@@ -219,7 +204,6 @@ const shapes=[
 {x:2,y:2,z:-2}
 ],
 
-// 7) วงหักมุม (Broken Loop)
 [
 {x:0,y:0,z:0},
 {x:1,y:0,z:0},
@@ -238,52 +222,30 @@ function buildRandomShape(){
     model.clear();
 
     let index;
-
     do{
         index=Math.floor(Math.random()*shapes.length);
     }while(index===lastShape);
 
     lastShape=index;
-
     currentShape=shapes[index];
 
     currentShape.forEach(c=>{
-
-        block(
-            c.x,
-            c.y,
-            c.z,
-            c.z===0
-        );
-
+        block(c.x,c.y,c.z);
     });
 
-    // จัดโมเดลให้อยู่กึ่งกลาง
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
 
-    model.position.set(
-        -center.x,
-        -center.y,
-        -center.z
-    );
-
-}   // <-- ฟังก์ชันจบตรงนี้
-
-// ================= RENDER =================
-function renderQuestion(){
-    renderer.render(scene,mainCam);
+    model.position.set(-center.x,-center.y,-center.z);
 }
 
-// ================= CAMERA VIEWS =================
+// ================= CAM VIEWS =================
 function makeCam(){
 
     const size = 3;
 
     const cam = new THREE.OrthographicCamera(
-        -size, size,
-         size,-size,
-         0.1,100
+        -size,size,size,-size,0.1,100
     );
 
     const ren = new THREE.WebGLRenderer({
@@ -297,43 +259,36 @@ function makeCam(){
     return {cam,ren};
 }
 
-const views = {
-    บน: makeCam(),
-    หน้า: makeCam(),
-    ข้าง: makeCam()
+const views={
+    บน:makeCam(),
+    หน้า:makeCam(),
+    ข้าง:makeCam()
 };
 
 views.หน้า.cam.position.set(0,0,10);
-views.หน้า.cam.lookAt(0,0,0);
-
 views.บน.cam.position.set(0,10,0);
-views.บน.cam.lookAt(0,0,0);
-views.บน.cam.up.set(0,0,-1);   // ให้ด้านบนตรง
-
+views.บน.cam.up.set(0,0,-1);
 views.ข้าง.cam.position.set(10,0,0);
-views.ข้าง.cam.lookAt(0,0,0);
 
 // ================= GAME =================
 let correct="";
 let score=0;
 let q=0;
-let student={};
 
 const keys=["บน","หน้า","ข้าง"];
+let answerMap={};
 
 function newQuestion(){
 
-buildRandomShape();
-    correct = keys[Math.floor(Math.random() * keys.length)];
+    buildRandomShape();
+
+    correct = keys[Math.floor(Math.random()*keys.length)];
 
     document.getElementById("question").innerHTML =
-"ข้อใดคือรูปด้าน : <b>" + correct + "</b>";
+    "ข้อใดคือรูปด้าน : <b>" + correct + "</b>";
 
     drawOptions();
 }
-
-// ================= OPTIONS =================
-let answerMap={};
 
 function drawOptions(){
 
@@ -348,104 +303,65 @@ function drawOptions(){
     render(a,views[list[0]]);
     render(b,views[list[1]]);
     render(c,views[list[2]]);
-
-    // ซ่อนตัวเลือก D
-
 }
 
 function render(canvas,obj){
 
     obj.ren.render(scene,obj.cam);
 
-const ctx=canvas.getContext("2d");
+    const ctx=canvas.getContext("2d");
+    ctx.clearRect(0,0,220,220);
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-ctx.drawImage(
-    obj.ren.domElement,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-);
+    ctx.drawImage(obj.ren.domElement,0,0,220,220);
 }
+
 // ================= CLICK =================
 a.onclick=()=>check("a");
 b.onclick=()=>check("b");
 c.onclick=()=>check("c");
 
-
 function check(ans){
 
-    const msg = document.getElementById("question");
+    const msg=document.getElementById("question");
 
     if(answerMap[ans]===correct){
-
         score++;
-        msg.innerHTML = "✅ <span style='color:green'>ตอบถูก</span>";
-
+        msg.innerHTML="✅ ตอบถูก";
     }else{
-
-        msg.innerHTML = "❌ <span style='color:red'>ตอบผิด</span>";
-
+        msg.innerHTML="❌ ตอบผิด";
     }
 
-    document.getElementById("score").innerText = score;
+    document.getElementById("score").innerText=score;
 
     q++;
-    document.getElementById("qnum").innerText = q;
+    document.getElementById("qnum").innerText=q;
 
     if(q>=10){
-
         setTimeout(()=>{
-            alert(
-"ชื่อ : "+student.name+
-"\nเลขที่ : "+student.no+
-"\nชั้น : "+student.class+
-"\nห้อง : "+student.room+
-"\nคะแนน : "+score+"/10"
-);
-        },800);
-
+            alert("จบเกม คะแนน: "+score+"/10");
+        },500);
         return;
     }
 
-    setTimeout(()=>{
-        newQuestion();
-    },800);
-
+    setTimeout(newQuestion,600);
 }
 
 // ================= START =================
 function startGame(){
-student={
-    name:document.getElementById("studentName").value,
-    no:document.getElementById("studentNo").value,
-    class:document.getElementById("studentClass").value,
-    room:document.getElementById("studentRoom").value
-};
 
-if(student.name==""){
-    alert("กรุณากรอกชื่อ");
-    return;
-}
-    score = 0;
-    q = 0;
-    lastShape = -1;
+    score=0;
+    q=0;
 
-    document.getElementById("score").innerText = 0;
-    document.getElementById("qnum").innerText = 0;
-
-    document.getElementById("question").innerHTML = "กำลังสร้างโจทย์...";
+    document.getElementById("score").innerText=0;
+    document.getElementById("qnum").innerText=0;
 
     newQuestion();
-
 }
 
 // ================= LOOP =================
 function animate(){
     requestAnimationFrame(animate);
-    renderQuestion();
+    renderer.render(scene,mainCam);
 }
 animate();
 
