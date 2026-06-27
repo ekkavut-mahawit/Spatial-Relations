@@ -19,7 +19,6 @@ body{
     width:100%;
     text-align:center;
     z-index:20;
-    line-height:1.4;
 }
 
 #scene3d{
@@ -29,8 +28,6 @@ body{
     transform:translateX(-50%);
     width:480px;
     height:480px;
-    border:none;
-    z-index:5;
 }
 
 #board{
@@ -41,7 +38,6 @@ body{
     grid-template-columns:repeat(3,220px);
     justify-content:center;
     gap:20px;
-    z-index:20;
 }
 
 .option{
@@ -51,21 +47,6 @@ body{
     border-radius:10px;
     background:white;
     cursor:pointer;
-    box-shadow:0 3px 8px rgba(0,0,0,.2);
-    transition:.2s;
-}
-
-.option:hover{
-    transform:scale(1.05);
-}
-
-canvas{ display:block; }
-
-#question{
-    margin-top:10px;
-    font-size:18px;
-    font-weight:bold;
-    color:#222;
 }
 </style>
 </head>
@@ -73,43 +54,24 @@ canvas{ display:block; }
 <body>
 
 <div id="ui">
-    <h2>🧠 เกมมิติสัมพันธ์ รูปทรงเรขาคณิต</h2>
 
-    <div style="font-size:16px;color:#333;line-height:1.6;margin-bottom:10px;">
-        <b>ผู้พัฒนา :</b> นางสาววรรณา อุ่นคำ<br>
-        กลุ่มสาระการเรียนรู้คณิตศาสตร์<br>
-        โรงเรียนมหาชนะชัยวิทยาคม
-    </div>
+<h2>🧠 เกมมิติสัมพันธ์</h2>
 
-    <p>
-        📊 คะแนน: <span id="score">0</span> |
-        📌 ข้อ: <span id="qnum">0</span>/10
-    </p>
+<p>
+📊 คะแนน: <span id="score">0</span> |
+📌 ข้อ: <span id="qnum">0</span>/10
+</p>
 
-    ชื่อ-สกุล
-    <input id="studentName">
+ชื่อ-สกุล <input id="studentName"><br><br>
 
-    เลขที่
-    <input id="studentNo" style="width:60px">
+<p id="question">กดเริ่มเกม</p>
 
-    ชั้น
-    <input id="studentClass" style="width:60px">
+<button onclick="startGame()">เริ่มเกม</button>
 
-    ห้อง
-    <input id="studentRoom" style="width:60px">
-
-    <br><br>
-
-    <p id="question">กดเริ่มเกม</p>
-
-    <br>
-    <button onclick="startGame()">เริ่มเกม</button>
 </div>
 
-<!-- MAIN VIEW -->
 <canvas id="scene3d" width="480" height="480"></canvas>
 
-<!-- OPTIONS -->
 <div id="board">
     <canvas id="a" class="option" width="220" height="220"></canvas>
     <canvas id="b" class="option" width="220" height="220"></canvas>
@@ -119,7 +81,8 @@ canvas{ display:block; }
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
-// ================= SCENE =================
+
+// ================= MAIN SCENE =================
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xeef3f8);
 
@@ -127,11 +90,11 @@ const mainCam = new THREE.PerspectiveCamera(75,1,0.1,1000);
 mainCam.position.set(6,6,6);
 mainCam.lookAt(0,0,0);
 
-const renderer = new THREE.WebGLRenderer({
+const mainRenderer = new THREE.WebGLRenderer({
     canvas:document.getElementById("scene3d"),
     antialias:true
 });
-renderer.setSize(480,480);
+mainRenderer.setSize(480,480);
 
 scene.add(new THREE.AmbientLight(0xffffff,1));
 
@@ -140,11 +103,10 @@ scene.add(model);
 
 // ================= BLOCK =================
 function block(x,y,z){
-
     const geo = new THREE.BoxGeometry(1,1,1);
     const mat = new THREE.MeshBasicMaterial({color:0x888888});
-
     const cube = new THREE.Mesh(geo,mat);
+
     cube.position.set(x,y,z);
 
     const edges = new THREE.EdgesGeometry(geo);
@@ -155,7 +117,6 @@ function block(x,y,z){
 
 // ================= SHAPES =================
 const shapes=[
-
 [
 {x:0,y:0,z:0},
 {x:1,y:0,z:-1},
@@ -163,7 +124,6 @@ const shapes=[
 {x:2,y:1,z:-1},
 {x:2,y:2,z:0}
 ],
-
 [
 {x:0,y:0,z:0},
 {x:1,y:0,z:0},
@@ -171,52 +131,18 @@ const shapes=[
 {x:2,y:1,z:-2},
 {x:2,y:2,z:-2}
 ],
-
 [
 {x:0,y:0,z:0},
 {x:0,y:1,z:0},
 {x:1,y:1,z:-1},
 {x:2,y:1,z:-2},
 {x:2,y:2,z:-1}
-],
-
-[
-{x:0,y:0,z:0},
-{x:0,y:1,z:-1},
-{x:1,y:1,z:-1},
-{x:2,y:1,z:-2},
-{x:2,y:2,z:-2}
-],
-
-[
-{x:1,y:0,z:0},
-{x:0,y:1,z:-1},
-{x:1,y:1,z:-1},
-{x:2,y:1,z:-2},
-{x:1,y:2,z:-2}
-],
-
-[
-{x:0,y:0,z:0},
-{x:0,y:1,z:-1},
-{x:1,y:1,z:-1},
-{x:1,y:2,z:-2},
-{x:2,y:2,z:-2}
-],
-
-[
-{x:0,y:0,z:0},
-{x:1,y:0,z:0},
-{x:2,y:0,z:-1},
-{x:0,y:1,z:-1},
-{x:2,y:1,z:-2}
 ]
-
 ];
 
-let currentShape=[];
 let lastShape=-1;
 
+// ================= BUILD SHAPE =================
 function buildRandomShape(){
 
     model.clear();
@@ -227,36 +153,20 @@ function buildRandomShape(){
     }while(index===lastShape);
 
     lastShape=index;
-    currentShape=shapes[index];
 
-    currentShape.forEach(c=>{
-        block(c.x,c.y,c.z);
+    shapes[index].forEach(p=>{
+        block(p.x,p.y,p.z);
     });
 
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
-
     model.position.set(-center.x,-center.y,-center.z);
 }
 
-// ================= CAM VIEWS =================
+// ================= VIEW CAMS =================
 function makeCam(){
-
-    const size = 3;
-
-    const cam = new THREE.OrthographicCamera(
-        -size,size,size,-size,0.1,100
-    );
-
-    const ren = new THREE.WebGLRenderer({
-        antialias:true,
-        alpha:true
-    });
-
-    ren.setSize(220,220);
-    ren.setClearColor(0xffffff,0);
-
-    return {cam,ren};
+    const cam = new THREE.OrthographicCamera(-3,3,3,-3,0.1,100);
+    return {cam};
 }
 
 const views={
@@ -270,6 +180,10 @@ views.บน.cam.position.set(0,10,0);
 views.บน.cam.up.set(0,0,-1);
 views.ข้าง.cam.position.set(10,0,0);
 
+// ================= SINGLE RENDERER (FIX สำคัญ) =================
+const optionRenderer = new THREE.WebGLRenderer({alpha:true,antialias:true});
+optionRenderer.setSize(220,220);
+
 // ================= GAME =================
 let correct="";
 let score=0;
@@ -278,6 +192,7 @@ let q=0;
 const keys=["บน","หน้า","ข้าง"];
 let answerMap={};
 
+// ================= QUESTION =================
 function newQuestion(){
 
     buildRandomShape();
@@ -285,11 +200,12 @@ function newQuestion(){
     correct = keys[Math.floor(Math.random()*keys.length)];
 
     document.getElementById("question").innerHTML =
-    "ข้อใดคือรูปด้าน : <b>" + correct + "</b>";
+    "ข้อใดคือรูปด้าน : <b>"+correct+"</b>";
 
     drawOptions();
 }
 
+// ================= DRAW OPTIONS =================
 function drawOptions(){
 
     let list=[...keys].sort(()=>Math.random()-0.5);
@@ -300,35 +216,39 @@ function drawOptions(){
         c:list[2]
     };
 
-    render(document.getElementById("a"), views[list[0]]);
-render(document.getElementById("b"), views[list[1]]);
-render(document.getElementById("c"), views[list[2]]);
+    renderOption("a", views[list[0]].cam);
+    renderOption("b", views[list[1]].cam);
+    renderOption("c", views[list[2]].cam);
 }
 
-function render(canvas,obj){
+// ================= RENDER OPTION =================
+function renderOption(id, cam){
 
-    obj.ren.render(scene,obj.cam);
+    const canvas = document.getElementById(id);
 
-    const ctx=canvas.getContext("2d");
+    optionRenderer.render(scene, cam);
+
+    const ctx = canvas.getContext("2d");
     ctx.clearRect(0,0,220,220);
 
-    ctx.drawImage(obj.ren.domElement,0,0,220,220);
+    ctx.drawImage(optionRenderer.domElement,0,0,220,220);
 }
 
 // ================= CLICK =================
-a.onclick=()=>check("a");
-b.onclick=()=>check("b");
-c.onclick=()=>check("c");
+document.getElementById("a").onclick=()=>check("a");
+document.getElementById("b").onclick=()=>check("b");
+document.getElementById("c").onclick=()=>check("c");
 
+// ================= CHECK =================
 function check(ans){
 
     const msg=document.getElementById("question");
 
     if(answerMap[ans]===correct){
         score++;
-        msg.innerHTML="✅ ตอบถูก";
+        msg.innerHTML="✅ ถูกต้อง";
     }else{
-        msg.innerHTML="❌ ตอบผิด";
+        msg.innerHTML="❌ ผิด";
     }
 
     document.getElementById("score").innerText=score;
@@ -337,18 +257,15 @@ function check(ans){
     document.getElementById("qnum").innerText=q;
 
     if(q>=10){
-        setTimeout(()=>{
-            alert("จบเกม คะแนน: "+score+"/10");
-        },500);
+        alert("จบเกม คะแนน "+score+"/10");
         return;
     }
 
-    setTimeout(newQuestion,600);
+    setTimeout(newQuestion,500);
 }
 
 // ================= START =================
 function startGame(){
-
     score=0;
     q=0;
 
@@ -361,7 +278,7 @@ function startGame(){
 // ================= LOOP =================
 function animate(){
     requestAnimationFrame(animate);
-    renderer.render(scene,mainCam);
+    mainRenderer.render(scene,mainCam);
 }
 animate();
 
